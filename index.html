@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#f39c12">
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <style>
@@ -67,21 +67,28 @@
                 
                 <label>Room Selector</label>
                 <select id="room" onchange="updatePreview()">
-                    <option value="Living Room">Living Room</option>
-                    <option value="Master Bed">Master Bed</option>
-                    <option value="Guest Bed">Guest Bed</option>
+                    <option value="Entry/Foyer">Entry / Foyer</option>
                     <option value="Kitchen">Kitchen</option>
-                    <option value="Master Bath">Master Bath</option>
-                    <option value="Guest Bath">Guest Bath</option>
+                    <option value="Living Room">Living Room</option>
+                    <option value="Dining Room">Dining Room</option>
                     <option value="Hallway">Hallway</option>
-                    <option value="Den/Office">Den / Office</option>
+                    <option value="Bathroom 1">Bathroom 1</option>
+                    <option value="Bathroom 2">Bathroom 2</option>
+                    <option value="Bedroom 1 (Master)">Bedroom 1 (Master)</option>
+                    <option value="Bedroom 2">Bedroom 2</option>
+                    <option value="Bedroom 3">Bedroom 3</option>
+                    <option value="Utility/Laundry">Utility / Laundry</option>
+                    <option value="Closet/Storage">Closet / Storage</option>
                 </select>
 
-                <label style="margin-top:10px;">Surface / Aspect</label>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Ceiling')">CEILING</button>
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Floor')">FLOOR</button>
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Wall')">WALL</button>
+                <label style="margin-top:10px;">Surface / Aspect (Clockwise)</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                    <button class="btn" style="padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Ceiling')">CEILING</button>
+                    <button class="btn" style="padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Floor')">FLOOR</button>
+                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall A (Entry)')">WALL A (Entry)</button>
+                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall B (Left)')">WALL B (Left)</button>
+                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall C (Opp)')">WALL C (Opp)</button>
+                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall D (Right)')">WALL D (Right)</button>
                 </div>
                 <input type="text" id="surfaceInput" value="Ceiling" style="margin-top:5px; color:#f39c12; border-color:#f39c12;" oninput="updatePreview()">
             </div>
@@ -96,7 +103,7 @@
 
             <div class="card" style="text-align:center;">
                 <label>Current ID</label>
-                <div id="fullIDDisplay" style="font-size: 2rem; font-weight: 900; color: #f39c12; margin: 5px 0;">Unit -- Living Room-Ceiling</div>
+                <div id="fullIDDisplay" style="font-size: 1.8rem; font-weight: 900; color: #f39c12; margin: 5px 0;">Unit -- Entry/Foyer-Ceiling</div>
             </div>
         </div>
 
