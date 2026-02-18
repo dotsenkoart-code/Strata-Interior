@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v2.0</title>
+    <title>Strata-Scan: Interior v2.2 (Speed Workflow)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -10,28 +10,32 @@
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; padding: 0; margin: 0; overflow: hidden; touch-action: manipulation; }
-        /* Increased width to 500vw to accommodate 5 slides */
-        .slide-container { display: flex; transition: transform 0.3s ease-in-out; width: 500vw; height: calc(100vh - 70px); }
+        .slide-container { display: flex; transition: transform 0.3s ease-in-out; width: 400vw; height: calc(100vh - 70px); }
         .slide { width: 100vw; height: 100%; padding: 15px; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
         .card { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #333; }
         
         .navbar { height: 70px; background: #111; display: flex; border-top: 2px solid #333; position: fixed; bottom: 0; width: 100%; z-index: 1000; }
-        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; color: #555; cursor: pointer; text-align: center; }
+        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #555; cursor: pointer; text-align: center; }
         .nav-item.active { color: #f39c12; border-top: 3px solid #f39c12; background: #1a1a1a; }
         
         .stepper { display: flex; align-items: center; justify-content: space-between; background: #222; border-radius: 12px; border: 2px solid #444; margin: 10px 0; overflow: hidden; }
         .step-btn { width: 85px; height: 85px; background: #333; border: none; color: #fff; font-size: 2.5rem; font-weight: bold; cursor: pointer; }
         .step-val { flex: 1; text-align: center; font-size: 2.2rem; font-weight: 900; color: #f39c12; text-shadow: 0 0 8px #f39c12; }
-        .step-val.blue-glow { color: #0cf; text-shadow: 0 0 8px #0cf; }
         
         input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 14px; background: #222; color: #fff; border: 2px solid #555; border-radius: 8px; font-size: 1.2rem; text-align: center; box-sizing: border-box; margin: 5px 0; }
         label { font-size: 0.7rem; color: #f39c12; font-weight: bold; text-transform: uppercase; display: block; margin-top: 5px; }
         
-        .alarm-box { background: #222; padding: 25px; text-align: center; border-radius: 15px; font-size: 2rem; font-weight: 900; border: 5px solid #444; margin: 10px 0; transition: 0.3s; }
+        .alarm-box { background: #222; padding: 25px; text-align: center; border-radius: 15px; font-size: 2.5rem; font-weight: 900; border: 5px solid #444; margin: 10px 0; transition: 0.3s; }
         .crit { background: #f00 !important; color: #fff; border-color: #fff !important; animation: blink 0.6s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         .btn { padding: 20px; border-radius: 12px; border: none; width: 100%; font-size: 1.3rem; font-weight: 800; cursor: pointer; }
+        .btn-active { background: #f39c12 !important; color: #000 !important; font-weight: 900; border: 2px solid #fff; }
+
+        .mode-toggle { display: flex; background: #333; border-radius: 12px; padding: 5px; margin-bottom: 15px; border: 2px solid #555; }
+        .mode-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #888; font-weight: 900; font-size: 1.1rem; border-radius: 8px; transition: 0.2s; cursor: pointer;}
+        .mode-btn.active-water { background: #007bff; color: #fff; box-shadow: 0 0 15px #007bff; }
+        .mode-btn.active-air { background: #f39c12; color: #000; box-shadow: 0 0 15px #f39c12; }
 
         .check-item { background: #333; padding: 15px; border-radius: 10px; font-size: 0.75rem; text-align: center; border: 1px solid #555; font-weight: bold; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
         .check-item.active { background: #f39c12; color: #000; border-color: #fff; }
@@ -49,59 +53,64 @@
     <div class="slide-container" id="mainSlider">
         
         <div class="slide">
-            <h2 style="color:#f39c12">1. UNIT MAPPING</h2>
+            <h2 style="color:#f39c12">1. ENVELOPE MAPPING</h2>
             <div class="card">
-                <label>Technician Name</label>
-                <input type="text" id="techName" placeholder="Enter Name..." oninput="saveDraft()">
-                <label style="margin-top:10px;">Project Address / Building</label>
-                <input type="text" id="projectID" placeholder="Enter Site Name..." oninput="saveDraft()">
-            </div>
-
-            <div class="card">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <div style="display:flex; gap:10px;">
                     <div style="flex:2;">
-                        <label>Unit # / Location</label>
+                        <label>Unit #</label>
                         <input type="text" id="unitID" placeholder="e.g. 402" oninput="updatePreview()">
                     </div>
                     <div style="flex:1;">
                         <label>Floor</label>
-                        <input type="text" id="floorLevel" value="1" placeholder="e.g. 1" oninput="updatePreview()">
+                        <input type="text" id="floorLevel" value="1" oninput="updatePreview()">
                     </div>
                 </div>
                 
-                <label>Room / Area</label>
+                <label style="margin-top:10px;">Room / Area</label>
                 <input type="text" id="room" list="roomOptions" placeholder="Type or select room..." value="Living Room" oninput="updatePreview()">
                 <datalist id="roomOptions">
-                    <option value="Entry">
                     <option value="Living Room">
                     <option value="Kitchen">
+                    <option value="Master Bedroom">
+                    <option value="Bedroom 2">
                     <option value="Bathroom">
-                    <option value="Bedroom">
-                    <option value="Hallway">
-                    <option value="Closet">
                 </datalist>
-
-                <label style="margin-top:10px;">Surface / Aspect (Clockwise)</label>
-                
-                <div style="display:flex; gap:5px; margin-bottom:5px;">
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Ceiling')">CEILING</button>
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Floor')">FLOOR</button>
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Window')">WINDOW</button>
-                    <button class="btn" style="flex:1; padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall')">WALL</button>
-                </div>
-                
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall A (Entry)')">WALL A (Entry)</button>
-                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall B (Left)')">WALL B (Left)</button>
-                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall C (Opp)')">WALL C (Opp)</button>
-                    <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall D (Right)')">WALL D (Right)</button>
-                </div>
-                
-                <input type="text" id="surfaceInput" value="Ceiling" style="margin-top:5px; color:#f39c12; border-color:#f39c12;" oninput="updatePreview()">
             </div>
 
             <div class="card">
-                <label>Image # (Editable)</label>
+                <label>Target Element</label>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <button id="btnElWindow" class="btn btn-active" style="flex:1; padding:12px; font-size:0.8rem; background:#333; color:#fff;" onclick="setElement('Window', 'btnElWindow')">WINDOW</button>
+                    <button id="btnElSlider" class="btn" style="flex:1; padding:12px; font-size:0.8rem; background:#333; color:#fff;" onclick="setElement('Slider', 'btnElSlider')">SLIDER / DOOR</button>
+                    <button id="btnElFacade" class="btn" style="flex:1; padding:12px; font-size:0.8rem; background:#333; color:#fff;" onclick="setElement('Facade Wall', 'btnElFacade')">FACADE WALL</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; background:#222; border-radius:8px; padding:5px 10px;">
+                    <label style="margin:0; font-size:0.9rem; flex:1;">Element # <br><span style="font-size:0.6rem; color:#888;">(Left to Right)</span></label>
+                    <div class="stepper" style="margin:0; flex:1; border:1px solid #555;">
+                        <button class="step-btn" style="width:40px; height:50px; font-size:1.5rem;" onclick="stepElement(-1)">−</button>
+                        <div class="step-val" id="elementNumVal" style="font-size:1.6rem;">1</div>
+                        <button class="step-btn" style="width:40px; height:50px; font-size:1.5rem;" onclick="stepElement(1)">+</button>
+                    </div>
+                </div>
+
+                <label>Defect Zone / Area</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                    <button id="btnZoneLeft" class="btn" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Left Jamb', 'btnZoneLeft')">LEFT JAMB</button>
+                    <button id="btnZoneHeader" class="btn" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Header', 'btnZoneHeader')">HEADER</button>
+                    <button id="btnZoneRight" class="btn" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Right Jamb', 'btnZoneRight')">RIGHT JAMB</button>
+                    <button id="btnZoneBase" class="btn" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Base / Floor', 'btnZoneBase')">BASE / FLOOR</button>
+                    <button id="btnZoneSill" class="btn btn-active" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Sill', 'btnZoneSill')">SILL</button>
+                    <button id="btnZoneCenter" class="btn" style="padding:10px; font-size:0.75rem; background:#333; color:#fff;" onclick="setZone('Center / Glass', 'btnZoneCenter')">CENTER / GLASS</button>
+                </div>
+
+                <input type="hidden" id="targetElement" value="Window">
+                <input type="hidden" id="elementNum" value="1">
+                <input type="hidden" id="defectZone" value="Sill">
+            </div>
+
+            <div class="card">
+                <label>Image #</label>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-weight:bold; color:#f39c12;">FLIR</span>
                     <input type="number" id="imgNum" value="1" oninput="updatePreview()" style="flex:1;">
@@ -109,8 +118,8 @@
             </div>
 
             <div class="card" style="text-align:center;">
-                <label>Current ID</label>
-                <div id="fullIDDisplay" style="font-size: 1.6rem; font-weight: 900; color: #f39c12; margin: 5px 0;">Unit -- (Fl 1) - Living Room - Ceiling</div>
+                <label>Current Tag ID</label>
+                <div id="fullIDDisplay" style="font-size: 1.4rem; font-weight: 900; color: #f39c12; margin: 5px 0; line-height: 1.2;">Unit -- (Fl 1) <br> Living Room <br> Window 1 (Sill)</div>
             </div>
         </div>
 
@@ -159,17 +168,30 @@
         </div>
 
         <div class="slide">
-            <h2 style="color:#0cf">3. 💧 WATER DIAGNOSTIC</h2>
+            <h2 style="color:#0f0">3. DIAGNOSTIC</h2>
             
-            <div class="card" style="border-color:#0cf;">
-                <label style="color:#0cf;">Water Intrusion Checklist</label>
+            <div class="mode-toggle">
+                <button class="mode-btn active-water" id="modeWater" onclick="setMode('WATER')">💧 WATER MODE</button>
+                <button class="mode-btn" id="modeAir" onclick="setMode('AIR')">💨 AIR MODE</button>
+            </div>
+
+            <div class="card">
+                <label>Forensic Checklist</label>
                 <div id="waterChecklist" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
                     <div class="check-item sound-box active" id="soundBtnWater" onclick="toggleSound('WATER')">SOUND / DRY</div>
-                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">CEILING STAIN</div>
-                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">WINDOW LEAK</div>
-                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">PLUMBING SUSPECT</div>
+                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">WATER STAIN</div>
+                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">WINDOW PERIMETER</div>
+                    <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">WEEP HOLE FAIL</div>
                     <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">CONDENSATION</div>
                     <div class="check-item defect-water" onclick="toggleDefect(this, 'WATER')">FACADE INTRUSION</div>
+                </div>
+                <div id="airChecklist" style="display:none; grid-template-columns: 1fr 1fr; gap:5px;">
+                    <div class="check-item sound-box active" id="soundBtnAir" onclick="toggleSound('AIR')">NO ANOMALIES</div>
+                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">WEATHERSTRIP FAIL</div>
+                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">MISSING INSULATION</div>
+                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">GLAZING / SEAL FAIL</div>
+                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">THERMAL BRIDGE</div>
+                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">PENETRATION GAP</div>
                 </div>
             </div>
             
@@ -178,7 +200,7 @@
                 <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
                     <div class="stepper" style="flex:1; margin:0;">
                         <button class="step-btn" style="width:50px; height:60px;" onclick="step('moisturePct', -1)">−</button>
-                        <div class="step-val blue-glow" id="moisturePctVal" style="font-size:1.5rem;">85</div>
+                        <div class="step-val" id="moisturePctVal" style="font-size:1.5rem; color:#0cf; text-shadow:none;">85</div>
                         <button class="step-btn" style="width:50px; height:60px;" onclick="step('moisturePct', 1)">+</button>
                     </div>
                     <span style="font-weight:bold; color:#0cf; font-size:1.5rem;">%</span>
@@ -190,55 +212,28 @@
             <div class="card">
                 <label>Surface Temp (°F)</label>
                 <div class="stepper">
-                    <button class="step-btn" onclick="step('surfTemp', -0.5)" style="width:70px; height:60px;">−</button>
-                    <div class="step-val blue-glow" id="surfTempValWater">72.0</div>
-                    <button class="step-btn" onclick="step('surfTemp', 0.5)" style="width:70px; height:60px;">+</button>
+                    <button class="step-btn" onclick="step('surfTemp', -0.5)" style="width:50px; height:60px;">−</button>
+                    <div class="step-val" id="surfTempVal" style="font-size:1.4rem;">72.0</div>
+                    <button class="step-btn" onclick="step('surfTemp', 0.5)" style="width:50px; height:60px;">+</button>
                 </div>
             </div>
             
-            <div class="alarm-box" id="resultBoxWater">--</div>
-            <button class="btn" style="background:#0cf; color:#000;" onclick="goToSlide(3)">CONTINUE TO AIR SCAN ➔</button>
-            
+            <div class="alarm-box" id="resultBox">--</div>
+            <button class="btn" style="background:#007bff; color:#fff;" onclick="logEvidence()">✅ COMMIT DATA SNAPSHOT</button>
             <input type="hidden" id="surfTemp" value="72.0">
         </div>
 
         <div class="slide">
-            <h2 style="color:#f39c12">4. 💨 AIR DIAGNOSTIC</h2>
-            
-            <div class="card" style="border-color:#f39c12;">
-                <label>Air / Thermal Envelope Checklist</label>
-                <div id="airChecklist" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <div class="check-item sound-box active" id="soundBtnAir" onclick="toggleSound('AIR')">NO ANOMALIES</div>
-                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">DRAFT / SEAL FAIL</div>
-                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">MISSING INSULATION</div>
-                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">THERMAL BRIDGE</div>
-                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">HVAC LEAK</div>
-                    <div class="check-item defect-air" onclick="toggleDefect(this, 'AIR')">PENETRATION GAP</div>
-                </div>
-            </div>
-
+            <h2 style="color:#ccc">4. COMMAND CENTER</h2>
             <div class="card">
-                <label>Surface Temp (°F) (Synced)</label>
-                <div class="stepper">
-                    <button class="step-btn" onclick="step('surfTemp', -0.5)" style="width:70px; height:60px;">−</button>
-                    <div class="step-val" id="surfTempValAir">72.0</div>
-                    <button class="step-btn" onclick="step('surfTemp', 0.5)" style="width:70px; height:60px;">+</button>
-                </div>
-            </div>
-            
-            <div class="alarm-box" id="resultBoxAir">--</div>
-            <button class="btn" style="background:#28a745; color:#fff;" onclick="logEvidence()">✅ COMMIT COMBINED SNAPSHOT</button>
-        </div>
-
-        <div class="slide">
-            <h2 style="color:#ccc">5. COMMAND CENTER</h2>
-            <div class="card">
-                <label>Fleet Data Tracking</label>
-                <button class="btn" style="background:#28a745; color:#fff; margin-top:10px;" onclick="nextImage()">ADVANCE & RESET TO MAPPING (+1)</button>
+                <label>Project Details</label>
+                <input type="text" id="projectID" placeholder="Project Name..." oninput="saveDraft()">
+                <input type="text" id="techName" placeholder="Tech Name..." oninput="saveDraft()">
+                <button class="btn" style="background:#28a745; color:#fff; margin-top:10px;" onclick="nextImage()">ADVANCE & RESET (+1)</button>
             </div>
             <div class="vault-wrap">
                 <table id="logTable">
-                    <thead><tr><th>Tech</th><th>Time</th><th>Img</th><th>ID</th><th>Water Finds</th><th>Mtr %</th><th>Air Finds</th><th>Surf T</th><th>Physics</th></tr></thead>
+                    <thead><tr><th>Time</th><th>Img</th><th>ID</th><th>Mode</th><th>Findings</th><th>Mtr %</th><th>Surf T</th><th>Physics</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -249,7 +244,7 @@
             <div class="card" style="margin-top:40px; border-color:#222; background:#111;">
                 <label style="color:#555;">System Settings</label>
                 <input type="password" id="apiKeyInput" placeholder="Enter OpenWeather API Key..." style="font-size:0.8rem; background:#000; border-color:#333;">
-                <button class="btn" style="background:#222; color:#888; margin-top:5px; padding:10px; font-size:0.9rem;" onclick="saveApiKey()">SAVE API KEY TO DEVICE</button>
+                <button class="btn" style="background:#222; color:#888; margin-top:5px; padding:10px; font-size:0.9rem;" onclick="saveApiKey()">SAVE API KEY</button>
             </div>
         </div>
     </div>
@@ -257,12 +252,13 @@
     <div class="navbar">
         <div class="nav-item active" onclick="goToSlide(0)">MAP</div>
         <div class="nav-item" onclick="goToSlide(1)">CLIMATE</div>
-        <div class="nav-item" onclick="goToSlide(2)">WATER</div>
-        <div class="nav-item" onclick="goToSlide(3)">AIR</div>
-        <div class="nav-item" onclick="goToSlide(4)">VAULT</div>
+        <div class="nav-item" onclick="goToSlide(2)">DIAGNOSE</div>
+        <div class="nav-item" onclick="goToSlide(3)">VAULT</div>
     </div>
 
     <script>
+        let currentMode = "WATER";
+
         function initApp() {
             if (localStorage.getItem('strataVaultInteriorV2')) document.getElementById('logTable').querySelector('tbody').innerHTML = localStorage.getItem('strataVaultInteriorV2');
             if (localStorage.getItem('strataInteriorDraft')) {
@@ -276,26 +272,54 @@
             updatePhysics();
         }
 
-        function setSurface(val) {
-            document.getElementById('surfaceInput').value = val;
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeWater').className = mode === 'WATER' ? 'mode-btn active-water' : 'mode-btn';
+            document.getElementById('modeAir').className = mode === 'AIR' ? 'mode-btn active-air' : 'mode-btn';
+            
+            document.getElementById('waterChecklist').style.display = mode === 'WATER' ? 'grid' : 'none';
+            document.getElementById('airChecklist').style.display = mode === 'AIR' ? 'grid' : 'none';
+
+            toggleSound(mode);
+            updatePhysics();
+        }
+
+        // --- ENVELOPE MAPPING LOGIC ---
+        function setElement(val, btnId) {
+            document.getElementById('targetElement').value = val;
+            document.getElementById('btnElWindow').classList.remove('btn-active');
+            document.getElementById('btnElSlider').classList.remove('btn-active');
+            document.getElementById('btnElFacade').classList.remove('btn-active');
+            document.getElementById(btnId).classList.add('btn-active');
+            updatePreview();
+        }
+
+        function stepElement(val) {
+            let num = parseInt(document.getElementById('elementNum').value) + val;
+            if(num < 1) num = 1;
+            document.getElementById('elementNum').value = num;
+            document.getElementById('elementNumVal').innerText = num;
+            updatePreview();
+        }
+
+        function setZone(val, btnId) {
+            document.getElementById('defectZone').value = val;
+            const buttons = ['btnZoneLeft', 'btnZoneHeader', 'btnZoneRight', 'btnZoneBase', 'btnZoneSill', 'btnZoneCenter'];
+            buttons.forEach(id => document.getElementById(id).classList.remove('btn-active'));
+            document.getElementById(btnId).classList.add('btn-active');
             updatePreview();
         }
 
         function step(id, val) {
-            const hiddenEl = document.getElementById(id);
-            let newVal = (parseFloat(hiddenEl.value) + val).toFixed(id === 'moisturePct' ? 0 : 1);
-            
+            const el = document.getElementById(id);
+            const display = document.getElementById(id + 'Val');
+            let newVal = (parseFloat(el.value) + val).toFixed(id === 'moisturePct' ? 0 : 1);
             if(id === 'moisturePct') {
                 if(newVal < 0) newVal = 0;
                 if(newVal > 100) newVal = 100;
-                document.getElementById('moisturePctVal').innerText = newVal;
-            } else if (id === 'surfTemp') {
-                // Update BOTH UI elements for Surface Temp
-                document.getElementById('surfTempValWater').innerText = newVal;
-                document.getElementById('surfTempValAir').innerText = newVal;
             }
-            
-            hiddenEl.value = newVal;
+            el.value = newVal;
+            if(display) display.innerText = newVal;
             updatePhysics();
         }
 
@@ -303,9 +327,12 @@
             const unit = document.getElementById('unitID').value || "--";
             const floor = document.getElementById('floorLevel').value || "1";
             const room = document.getElementById('room').value || "--";
-            const surf = document.getElementById('surfaceInput').value || "--";
             
-            document.getElementById('fullIDDisplay').innerText = `Unit ${unit} (Fl ${floor}) - ${room} - ${surf}`;
+            const element = document.getElementById('targetElement').value;
+            const elNum = document.getElementById('elementNum').value;
+            const zone = document.getElementById('defectZone').value;
+            
+            document.getElementById('fullIDDisplay').innerHTML = `Unit ${unit} (Fl ${floor}) <br> ${room} <br> ${element} ${elNum} (${zone})`;
         }
 
         function updatePhysics() {
@@ -314,44 +341,42 @@
             const tOut = parseFloat(document.getElementById('tOut').value);
             const tSurf = parseFloat(document.getElementById('surfTemp').value);
 
-            // Calc Delta T
             const dt = Math.abs(tIn - tOut).toFixed(1);
             document.getElementById('deltaTVal').innerText = dt + "°F";
             document.getElementById('deltaTwarn').style.display = dt < 15.0 ? 'block' : 'none';
 
-            // Calc Dew Point
             const a = 17.27, b = 237.7;
             const gamma = (a * ((tIn-32)*5/9)) / (b + ((tIn-32)*5/9)) + Math.log(rhIn/100);
             const tdp = ((b * gamma) / (a - gamma) * 9/5) + 32;
             document.getElementById('dewPointVal').innerText = tdp.toFixed(1) + "°F";
 
-            // Evaluate WATER Result
-            const riskWater = tSurf - tdp;
-            const boxWater = document.getElementById('resultBoxWater');
-            if (tSurf <= tdp) {
-                boxWater.innerText = "CONDENSATION";
-                boxWater.className = "alarm-box crit";
-            } else if (riskWater < 5.0) {
-                boxWater.innerText = "RISK (" + riskWater.toFixed(1) + "°)";
-                boxWater.className = "alarm-box warn";
-                boxWater.style.background = "#f39c12"; boxWater.style.color = "#000";
+            const box = document.getElementById('resultBox');
+            
+            if (currentMode === 'WATER') {
+                const risk = tSurf - tdp;
+                if (tSurf <= tdp) {
+                    box.innerText = "CONDENSATION";
+                    box.className = "alarm-box crit";
+                } else if (risk < 5.0) {
+                    box.innerText = "RISK (" + risk.toFixed(1) + "°)";
+                    box.className = "alarm-box warn";
+                    box.style.background = "#f39c12"; box.style.color = "#000";
+                } else {
+                    box.innerText = "DRY";
+                    box.className = "alarm-box";
+                    box.style.background = "#222"; box.style.color = "#fff";
+                }
             } else {
-                boxWater.innerText = "DRY";
-                boxWater.className = "alarm-box";
-                boxWater.style.background = "#222"; boxWater.style.color = "#fff";
-            }
-
-            // Evaluate AIR Result
-            const devAir = Math.abs(tIn - tSurf);
-            const boxAir = document.getElementById('resultBoxAir');
-            if (devAir > 5.0) {
-                boxAir.innerText = "ANOMALY (" + devAir.toFixed(1) + "°)";
-                boxAir.className = "alarm-box warn";
-                boxAir.style.background = "#f39c12"; boxAir.style.color = "#000";
-            } else {
-                boxAir.innerText = "NORMAL";
-                boxAir.className = "alarm-box";
-                boxAir.style.background = "#222"; boxAir.style.color = "#fff";
+                const dev = Math.abs(tIn - tSurf);
+                if (dev > 5.0) {
+                    box.innerText = "ANOMALY (" + dev.toFixed(1) + "°)";
+                    box.className = "alarm-box warn";
+                    box.style.background = "#f39c12"; box.style.color = "#000";
+                } else {
+                    box.innerText = "NORMAL";
+                    box.className = "alarm-box";
+                    box.style.background = "#222"; box.style.color = "#fff";
+                }
             }
         }
 
@@ -362,7 +387,7 @@
             btn.classList.add('active');
             defects.forEach(d => d.classList.remove('active'));
             
-            if(mode === 'WATER') resetMeterUI();
+            resetMeterUI();
         }
 
         function toggleDefect(el, mode) {
@@ -375,7 +400,7 @@
 
             if (mode === 'WATER' && hasActive) {
                 document.getElementById('groundTruthCard').style.display = 'block';
-            } else if (mode === 'WATER') {
+            } else {
                 resetMeterUI();
             }
         }
@@ -405,54 +430,48 @@
         function logEvidence() {
             const now = new Date();
             const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
-            const id = document.getElementById('fullIDDisplay').innerText;
-            const tech = document.getElementById('techName').value || "Unknown";
+            
+            const unit = document.getElementById('unitID').value || "--";
+            const floor = document.getElementById('floorLevel').value || "1";
+            const room = document.getElementById('room').value || "--";
+            const element = document.getElementById('targetElement').value;
+            const elNum = document.getElementById('elementNum').value;
+            const zone = document.getElementById('defectZone').value;
+            const id = `Unit ${unit}(Fl ${floor})-${room}-${element} ${elNum}(${zone})`;
+
             const img = "FLIR" + document.getElementById('imgNum').value.toString().padStart(4, '0');
             
-            // Gather Water Findings
-            let waterFindings = Array.from(document.querySelectorAll('.defect-water.active')).map(i => i.innerText).join(" | ");
-            if (!waterFindings) waterFindings = "SOUND / DRY";
+            const activeSelector = currentMode === 'WATER' ? '.defect-water.active' : '.defect-air.active';
+            const findings = Array.from(document.querySelectorAll(activeSelector)).map(i => i.innerText).join(" | ") || (currentMode === 'WATER' ? "SOUND / DRY" : "NO ANOMALIES");
             
             const isMoistureVisible = document.getElementById('groundTruthCard').style.display === 'block';
             const mPct = isMoistureVisible ? document.getElementById('moisturePct').value + "%" : "--";
+            
             let provedText = "";
             if (isMoistureVisible) {
                  const meterBtn = document.getElementById('meterProvedBtn');
                  provedText = meterBtn.classList.contains('active') ? " (PROVED)" : " (UNVERIFIED)";
             }
-            waterFindings += provedText;
-
-            // Gather Air Findings
-            let airFindings = Array.from(document.querySelectorAll('.defect-air.active')).map(i => i.innerText).join(" | ");
-            if (!airFindings) airFindings = "NO ANOMALIES";
+            const finalFindings = findings + provedText;
 
             const surfT = document.getElementById('surfTemp').value;
-            const physicsStr = "Dp:" + document.getElementById('dewPointVal').innerText + " | DT:" + document.getElementById('deltaTVal').innerText;
+            const physicsStr = currentMode === 'WATER' ? "Dp:" + document.getElementById('dewPointVal').innerText : "DT:" + document.getElementById('deltaTVal').innerText;
 
-            // Build Row
-            const row = `<tr><td>${tech}</td><td>${time}</td><td>${img}</td><td>${id}</td><td>${waterFindings}</td><td>${mPct}</td><td>${airFindings}</td><td>${surfT}</td><td>${physicsStr}</td></tr>`;
+            const row = `<tr><td>${time}</td><td>${img}</td><td>${id}</td><td>${currentMode}</td><td>${finalFindings}</td><td>${mPct}</td><td>${surfT}</td><td>${physicsStr}</td></tr>`;
             document.getElementById('logTable').querySelector('tbody').insertAdjacentHTML('afterbegin', row);
             
-            // Save to LocalStorage using a new V2 key so it doesn't break old table formatting
             localStorage.setItem('strataVaultInteriorV2', document.getElementById('logTable').querySelector('tbody').innerHTML);
-            
-            // Go to Vault slide
-            goToSlide(4);
+            goToSlide(3);
         }
 
         function nextImage() {
             document.getElementById('imgNum').value = parseInt(document.getElementById('imgNum').value) + 1;
             
-            // Auto sync surface temp back to indoor ambient temp for a faster reset
             const tIn = document.getElementById('tIn').value;
             document.getElementById('surfTemp').value = tIn;
-            document.getElementById('surfTempValWater').innerText = parseFloat(tIn).toFixed(1);
-            document.getElementById('surfTempValAir').innerText = parseFloat(tIn).toFixed(1);
+            document.getElementById('surfTempVal').innerText = parseFloat(tIn).toFixed(1);
             
-            // Reset both checklists
-            toggleSound('WATER');
-            toggleSound('AIR');
-            
+            toggleSound(currentMode);
             updatePhysics();
             goToSlide(0);
         }
@@ -462,7 +481,7 @@
             localStorage.setItem('strataInteriorDraft', JSON.stringify(draft)); 
         }
         
-        function clearVault() { if(confirm("Wipe?")) { localStorage.removeItem('strataVaultInteriorV2'); location.reload(); } }
+        function clearVault() { if(confirm("Wipe Vault?")) { localStorage.removeItem('strataVaultInteriorV2'); location.reload(); } }
         
         function saveApiKey() { 
             localStorage.setItem('strataApiKey', document.getElementById('apiKeyInput').value); 
@@ -473,7 +492,7 @@
             const key = localStorage.getItem('strataApiKey');
             if(!key) {
                 alert("Please save your OpenWeather API Key in the Command Center first.");
-                goToSlide(4);
+                goToSlide(3);
                 return;
             }
             navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -487,10 +506,17 @@
         }
         
         function exportLogs() {
-            let csv = "Technician,Time,Image,ID,Water Findings,Moisture %,Air Findings,Surface Temp,Physics Ref\n";
-            document.querySelectorAll("#logTable tbody tr").forEach(tr => { csv += Array.from(tr.querySelectorAll("td")).map(td => `"${td.innerText}"`).join(",") + "\n"; });
+            let csv = "Project,Technician,Time,Image,ID,Mode,Findings,Moisture %,Surface Temp,Physics Ref\n";
+            const proj = document.getElementById('projectID').value || "Unknown Project";
+            const tech = document.getElementById('techName').value || "Unknown Tech";
+            
+            document.querySelectorAll("#logTable tbody tr").forEach(tr => { 
+                let rowData = `"${proj}","${tech}",`;
+                rowData += Array.from(tr.querySelectorAll("td")).map(td => `"${td.innerText}"`).join(","); 
+                csv += rowData + "\n"; 
+            });
             const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Strata_Combined_Interior_Report.csv"; a.click();
+            const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Strata_Scan_Report.csv"; a.click();
         }
 
         function goToSlide(num) {
@@ -499,11 +525,10 @@
             items.forEach((item, i) => item.classList.toggle('active', i === num));
         }
 
-        // Register the Service Worker for Offline PWA Support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Strata-Scan Interior Offline Engine Active:', reg.scope))
+                    .then(reg => console.log('Offline Engine Active'))
                     .catch(err => console.error('Offline Engine Failed:', err));
             });
         }
