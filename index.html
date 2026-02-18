@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v1.2</title>
+    <title>Strata-Scan: Interior v1.3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -65,25 +65,17 @@
                 <label>Unit # / Location</label>
                 <input type="text" id="unitID" placeholder="e.g. 402 or Lobby" oninput="updatePreview()" style="margin-bottom:10px;">
                 
-                <label>Room Selector</label>
-                <select id="room" onchange="checkCustomRoom()">
-                    <option value="Entry/Foyer">Entry / Foyer</option>
-                    <option value="Kitchen">Kitchen</option>
-                    <option value="Living Room">Living Room</option>
-                    <option value="Dining Room">Dining Room</option>
-                    <option value="Hallway">Hallway</option>
-                    <option value="Bathroom 1">Bathroom 1</option>
-                    <option value="Bathroom 2">Bathroom 2</option>
-                    <option value="Bathroom 3">Bathroom 3</option>
-                    <option value="Bathroom 4">Bathroom 4</option>
-                    <option value="Bedroom 1 (Master)">Bedroom 1 (Master)</option>
-                    <option value="Bedroom 2">Bedroom 2</option>
-                    <option value="Bedroom 3">Bedroom 3</option>
-                    <option value="Bedroom 4">Bedroom 4</option>
-                    <option value="Utility/Laundry">Utility / Laundry</option>
-                    <option value="Closet/Storage">Closet / Storage</option>
-                    <option value="Custom..." style="font-weight:bold; color:#f39c12;">➕ Custom Room...</option>
-                </select>
+                <label>Room / Area</label>
+                <input type="text" id="room" list="roomOptions" placeholder="Type or select room..." value="Living Room" oninput="updatePreview()">
+                <datalist id="roomOptions">
+                    <option value="Entry">
+                    <option value="Living Room">
+                    <option value="Kitchen">
+                    <option value="Bathroom">
+                    <option value="Bedroom">
+                    <option value="Hallway">
+                    <option value="Closet">
+                </datalist>
 
                 <label style="margin-top:10px;">Surface / Aspect (Clockwise)</label>
                 
@@ -113,7 +105,7 @@
 
             <div class="card" style="text-align:center;">
                 <label>Current ID</label>
-                <div id="fullIDDisplay" style="font-size: 1.8rem; font-weight: 900; color: #f39c12; margin: 5px 0;">Unit -- Entry/Foyer-Ceiling</div>
+                <div id="fullIDDisplay" style="font-size: 1.8rem; font-weight: 900; color: #f39c12; margin: 5px 0;">Unit -- Living Room-Ceiling</div>
             </div>
         </div>
 
@@ -266,24 +258,6 @@
             
             updatePreview();
             updatePhysics();
-        }
-
-        function checkCustomRoom() {
-            const select = document.getElementById('room');
-            if(select.value === 'Custom...') {
-                const customName = prompt("Enter Custom Room Name (e.g., Bedroom 5, Media Room):");
-                if(customName) {
-                    const opt = document.createElement('option');
-                    opt.value = customName;
-                    opt.innerText = customName;
-                    // Insert right before the "Custom..." option so it's selectable
-                    select.insertBefore(opt, select.lastElementChild);
-                    select.value = customName;
-                } else {
-                    select.selectedIndex = 0; // Reset to top if they cancel
-                }
-            }
-            updatePreview();
         }
 
         function setMode(mode) {
