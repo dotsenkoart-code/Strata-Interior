@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v1.0</title>
+    <title>Strata-Scan: Interior v1.1</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -82,14 +82,20 @@
                 </select>
 
                 <label style="margin-top:10px;">Surface / Aspect (Clockwise)</label>
+                
+                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Ceiling')">CEILING</button>
+                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Floor')">FLOOR</button>
+                    <button class="btn" style="flex:1; padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Window')">WINDOW</button>
+                </div>
+                
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button class="btn" style="padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Ceiling')">CEILING</button>
-                    <button class="btn" style="padding:10px; font-size:0.9rem; background:#333; color:#fff;" onclick="setSurface('Floor')">FLOOR</button>
                     <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall A (Entry)')">WALL A (Entry)</button>
                     <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall B (Left)')">WALL B (Left)</button>
                     <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall C (Opp)')">WALL C (Opp)</button>
                     <button class="btn" style="padding:10px; font-size:0.8rem; background:#333; color:#fff;" onclick="setSurface('Wall D (Right)')">WALL D (Right)</button>
                 </div>
+                
                 <input type="text" id="surfaceInput" value="Ceiling" style="margin-top:5px; color:#f39c12; border-color:#f39c12;" oninput="updatePreview()">
             </div>
 
