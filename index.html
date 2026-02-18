@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v2.2 (Pro Physics)</title>
+    <title>Strata-Scan: Interior v2.3 (Pro Alarms)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -21,6 +21,7 @@
         .stepper { display: flex; align-items: center; justify-content: space-between; background: #222; border-radius: 12px; border: 2px solid #444; margin: 10px 0; overflow: hidden; }
         .step-btn { width: 85px; height: 85px; background: #333; border: none; color: #fff; font-size: 2.5rem; font-weight: bold; cursor: pointer; }
         .step-val { flex: 1; text-align: center; font-size: 2.2rem; font-weight: 900; color: #f39c12; text-shadow: 0 0 8px #f39c12; }
+        .step-val.blue-glow { color: #0cf; text-shadow: 0 0 8px #0cf; }
         
         input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 14px; background: #222; color: #fff; border: 2px solid #555; border-radius: 8px; font-size: 1.2rem; text-align: center; box-sizing: border-box; margin: 5px 0; }
         label { font-size: 0.7rem; color: #f39c12; font-weight: bold; text-transform: uppercase; display: block; margin-top: 5px; }
@@ -35,7 +36,7 @@
 
         .mode-toggle { display: flex; background: #333; border-radius: 12px; padding: 5px; margin-bottom: 15px; border: 2px solid #555; }
         .mode-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #888; font-weight: 900; font-size: 1.1rem; border-radius: 8px; transition: 0.2s; cursor: pointer;}
-        .mode-btn.active-water { background: #007bff; color: #fff; box-shadow: 0 0 15px #007bff; }
+        .mode-btn.active-water { background: #0cf; color: #000; box-shadow: 0 0 15px #0cf; }
         .mode-btn.active-air { background: #f39c12; color: #000; box-shadow: 0 0 15px #f39c12; }
 
         .check-item { background: #333; padding: 15px; border-radius: 10px; font-size: 0.75rem; text-align: center; border: 1px solid #555; font-weight: bold; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
@@ -47,6 +48,10 @@
         .vault-wrap { overflow-x: auto; background: #111; border-radius: 8px; padding: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.5rem; color: #ccc; min-width: 1700px; }
         td, th { border: 1px solid #333; padding: 8px; text-align: left; }
+
+        .cheat-sheet { background:#111; border: 2px dashed #555; padding: 15px; text-align:center; border-radius: 8px; margin-bottom: 15px; }
+        .cheat-title { font-size:0.7rem; color:#888; font-weight:bold; letter-spacing: 1px; }
+        .cheat-val { font-size:1.8rem; font-weight:900; margin-top:5px; }
     </style>
 </head>
 <body onload="initApp()">
@@ -125,7 +130,7 @@
         </div>
 
         <div class="slide">
-            <h2 style="color:#0cf">2. CLIMATE BASELINE</h2>
+            <h2 style="color:#0cf">2. CLIMATE & ALARM SETUP</h2>
             
             <div class="card" style="border-color:#f39c12;">
                 <label style="color:#f39c12;">INDOOR AMBIENT (TESTO)</label>
@@ -154,6 +159,19 @@
                 </div>
             </div>
 
+            <div class="card" style="border-color:#fff;">
+                <label style="color:#fff;">DRY WALL BASELINE (FLIR REFERENCE)</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="flex:1;">
+                        <label>Dry Temp (°F)</label>
+                        <input type="number" id="tBase" value="71.0" oninput="updatePhysics()">
+                    </div>
+                    <div style="flex:1.5; font-size: 0.75rem; color:#aaa; line-height:1.2;">
+                        Shoot a known dry interior wall to establish your baseline for evaporative cooling (-3°F) and thermal bridging (±5°F).
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <label>Active Physics Engine</label>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size: 1.2rem;">
@@ -172,8 +190,19 @@
             <h2 style="color:#0f0">3. DIAGNOSTIC</h2>
             
             <div class="mode-toggle">
-                <button class="mode-btn active-water" id="modeWater" onclick="setMode('WATER')">💧 WATER MODE</button>
-                <button class="mode-btn" id="modeAir" onclick="setMode('AIR')">💨 AIR MODE</button>
+                <button class="mode-btn active-water" id="modeWater" onclick="setMode('WATER')">💧 WATER SCAN</button>
+                <button class="mode-btn" id="modeAir" onclick="setMode('AIR')">💨 AIR SCAN</button>
+            </div>
+
+            <div class="cheat-sheet" id="waterAlarmBox" style="border-color:#0cf;">
+                <div class="cheat-title">SET FLIR ISOTHERM (ACTIVE LEAK)</div>
+                <div class="cheat-val" id="uiWaterAlarmTarget" style="color:#0cf;">BELOW 68.0°F</div>
+                <div style="font-size:0.65rem; color:#888; margin-top:5px;">To find Condensation Risk, set alarm BELOW <span id="uiDewTarget">49.5</span>°F</div>
+            </div>
+
+            <div class="cheat-sheet" id="airAlarmBox" style="border-color:#f39c12; display:none;">
+                <div class="cheat-title">SET FLIR ISOTHERM (DRAFT/BRIDGE)</div>
+                <div class="cheat-val" id="uiAirAlarmTarget" style="color:#f39c12;">BELOW 66.0°F</div>
             </div>
 
             <div class="card">
@@ -201,7 +230,7 @@
                 <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
                     <div class="stepper" style="flex:1; margin:0;">
                         <button class="step-btn" style="width:50px; height:60px;" onclick="step('moisturePct', -1)">−</button>
-                        <div class="step-val" id="moisturePctVal" style="font-size:1.5rem; color:#0cf; text-shadow:none;">85</div>
+                        <div class="step-val blue-glow" id="moisturePctVal" style="font-size:1.5rem; text-shadow:none;">85</div>
                         <button class="step-btn" style="width:50px; height:60px;" onclick="step('moisturePct', 1)">+</button>
                     </div>
                     <span style="font-weight:bold; color:#0cf; font-size:1.5rem;">%</span>
@@ -211,17 +240,17 @@
             </div>
 
             <div class="card">
-                <label>Surface Temp (°F)</label>
+                <label>Actual Surface Temp of Anomaly (°F)</label>
                 <div class="stepper">
                     <button class="step-btn" onclick="step('surfTemp', -0.5)" style="width:50px; height:60px;">−</button>
-                    <div class="step-val" id="surfTempVal" style="font-size:1.4rem;">72.0</div>
+                    <div class="step-val" id="surfTempVal" style="font-size:1.4rem;">66.0</div>
                     <button class="step-btn" onclick="step('surfTemp', 0.5)" style="width:50px; height:60px;">+</button>
                 </div>
             </div>
             
             <div class="alarm-box" id="resultBox">--</div>
-            <button class="btn" style="background:#007bff; color:#fff;" onclick="logEvidence()">✅ COMMIT DATA SNAPSHOT</button>
-            <input type="hidden" id="surfTemp" value="72.0">
+            <button class="btn" style="background:#0cf; color:#000;" id="commitBtn" onclick="logEvidence()">✅ COMMIT WATER SNAPSHOT</button>
+            <input type="hidden" id="surfTemp" value="66.0">
         </div>
 
         <div class="slide">
@@ -278,8 +307,18 @@
             document.getElementById('modeWater').className = mode === 'WATER' ? 'mode-btn active-water' : 'mode-btn';
             document.getElementById('modeAir').className = mode === 'AIR' ? 'mode-btn active-air' : 'mode-btn';
             
+            // Toggle Checklists
             document.getElementById('waterChecklist').style.display = mode === 'WATER' ? 'grid' : 'none';
             document.getElementById('airChecklist').style.display = mode === 'AIR' ? 'grid' : 'none';
+
+            // Toggle FLIR Cheat Sheets
+            document.getElementById('waterAlarmBox').style.display = mode === 'WATER' ? 'block' : 'none';
+            document.getElementById('airAlarmBox').style.display = mode === 'AIR' ? 'block' : 'none';
+
+            // Toggle Button Color
+            const btn = document.getElementById('commitBtn');
+            btn.style.background = mode === 'WATER' ? '#0cf' : '#f39c12';
+            btn.innerHTML = mode === 'WATER' ? '✅ COMMIT WATER SNAPSHOT' : '✅ COMMIT AIR SNAPSHOT';
 
             toggleSound(mode);
             updatePhysics();
@@ -336,43 +375,56 @@
             document.getElementById('fullIDDisplay').innerHTML = `Unit ${unit} (Fl ${floor}) <br> ${room} <br> ${element} ${elNum} (${zone})`;
         }
 
-        // --- BULLETPROOF PHYSICS ENGINE ---
+        // --- BULLETPROOF PHYSICS & FLIR ALARM ENGINE ---
         function updatePhysics() {
             const tIn = parseFloat(document.getElementById('tIn').value);
             const rhIn = parseFloat(document.getElementById('rhIn').value);
             const tOut = parseFloat(document.getElementById('tOut').value);
+            const tBase = parseFloat(document.getElementById('tBase').value);
             const tSurf = parseFloat(document.getElementById('surfTemp').value);
 
-            // 1. AIR PHYSICS: Calculate Delta-T (ASTM C1060 Standard)
+            // 1. Calculate Delta-T
             const dt = Math.abs(tIn - tOut);
             document.getElementById('deltaTVal').innerText = dt.toFixed(1) + "°F";
-            // Warn if Delta-T is below the 15F industry threshold
             document.getElementById('deltaTwarn').style.display = dt < 15.0 ? 'block' : 'none';
 
-            // 2. WATER PHYSICS: Alduchov and Eskridge Dew Point Formula (High Precision)
-            // Convert to Celsius for the physics engine
+            // 2. Dew Point Formula (Alduchov and Eskridge)
             const tC = (tIn - 32) * 5 / 9;
             const a = 17.625;
             const b = 243.04;
-            
-            // Calculate alpha and Dew Point in Celsius
             const alpha = Math.log(rhIn / 100) + ((a * tC) / (b + tC));
             const tdpC = (b * alpha) / (a - alpha);
-            
-            // Convert back to Fahrenheit
             const tdpF = (tdpC * 9 / 5) + 32;
             document.getElementById('dewPointVal').innerText = tdpF.toFixed(1) + "°F";
+            document.getElementById('uiDewTarget').innerText = tdpF.toFixed(1);
 
+            // 3. SET THE FLIR ALARMS
+            // Water = Baseline minus 3 for evaporative cooling
+            const waterAlarm = (tBase - 3.0).toFixed(1);
+            document.getElementById('uiWaterAlarmTarget').innerText = `BELOW ${waterAlarm}°F`;
+
+            // Air = Baseline +/- 5 based on Outdoor Temp
+            if (tOut < tIn) {
+                // Cold outside = Cold draft inside
+                const airAlarm = (tBase - 5.0).toFixed(1);
+                document.getElementById('uiAirAlarmTarget').innerText = `BELOW ${airAlarm}°F`;
+                document.getElementById('uiAirAlarmTarget').style.color = "#0cf"; // Blue
+            } else {
+                // Hot outside = Hot draft inside
+                const airAlarm = (tBase + 5.0).toFixed(1);
+                document.getElementById('uiAirAlarmTarget').innerText = `ABOVE ${airAlarm}°F`;
+                document.getElementById('uiAirAlarmTarget').style.color = "#f00"; // Red
+            }
+
+            // 4. EVALUATE THE ACTUAL ANOMALY (surfTemp vs physics)
             const box = document.getElementById('resultBox');
             
             if (currentMode === 'WATER') {
-                // WATER EVALUATION LOGIC
                 const risk = tSurf - tdpF;
                 if (tSurf <= tdpF) {
                     box.innerText = "CONDENSATION";
                     box.className = "alarm-box crit";
                 } else if (risk <= 5.0) {
-                    // 5-Degree Microclimate Tolerance Buffer
                     box.innerText = "RISK (" + risk.toFixed(1) + "°)";
                     box.className = "alarm-box warn";
                 } else {
@@ -381,11 +433,9 @@
                     box.style.background = "#222"; box.style.color = "#fff";
                 }
             } else {
-                // AIR EVALUATION LOGIC
-                // Evaluate deviation from ambient indoor temp
-                const dev = Math.abs(tIn - tSurf);
-                if (dev > 5.0) {
-                    // If surface is more than 5 degrees off ambient, flag as thermal anomaly
+                // Air evaluation: compares Anomaly Surface Temp against the Dry Wall Baseline
+                const dev = Math.abs(tBase - tSurf);
+                if (dev >= 5.0) {
                     box.innerText = "ANOMALY (" + dev.toFixed(1) + "°)";
                     box.className = "alarm-box warn";
                 } else {
@@ -403,7 +453,7 @@
             btn.classList.add('active');
             defects.forEach(d => d.classList.remove('active'));
             
-            resetMeterUI();
+            if (mode === 'WATER') resetMeterUI();
         }
 
         function toggleDefect(el, mode) {
@@ -483,9 +533,10 @@
         function nextImage() {
             document.getElementById('imgNum').value = parseInt(document.getElementById('imgNum').value) + 1;
             
-            const tIn = document.getElementById('tIn').value;
-            document.getElementById('surfTemp').value = tIn;
-            document.getElementById('surfTempVal').innerText = parseFloat(tIn).toFixed(1);
+            // Auto sync surface temp back to the known DRY BASELINE for faster resetting
+            const tBase = document.getElementById('tBase').value;
+            document.getElementById('surfTemp').value = tBase;
+            document.getElementById('surfTempVal').innerText = parseFloat(tBase).toFixed(1);
             
             toggleSound(currentMode);
             updatePhysics();
