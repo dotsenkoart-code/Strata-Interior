@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v2.3 (Pro Alarms)</title>
+    <title>Strata-Scan: Interior v2.4</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -60,6 +60,13 @@
         
         <div class="slide">
             <h2 style="color:#f39c12">1. ENVELOPE MAPPING</h2>
+            
+            <div class="card">
+                <label>Project Details</label>
+                <input type="text" id="projectID" placeholder="Enter Project Name..." oninput="saveDraft()">
+                <input type="text" id="techName" placeholder="Enter Tech Name..." oninput="saveDraft()" style="margin-top:5px;">
+            </div>
+
             <div class="card">
                 <div style="display:flex; gap:10px;">
                     <div style="flex:2;">
@@ -256,10 +263,8 @@
         <div class="slide">
             <h2 style="color:#ccc">4. COMMAND CENTER</h2>
             <div class="card">
-                <label>Project Details</label>
-                <input type="text" id="projectID" placeholder="Project Name..." oninput="saveDraft()">
-                <input type="text" id="techName" placeholder="Tech Name..." oninput="saveDraft()">
-                <button class="btn" style="background:#28a745; color:#fff; margin-top:10px;" onclick="nextImage()">ADVANCE & RESET (+1)</button>
+                <label>Session Management</label>
+                <button class="btn" style="background:#28a745; color:#fff;" onclick="nextImage()">ADVANCE & RESET TO MAPPING (+1)</button>
             </div>
             <div class="vault-wrap">
                 <table id="logTable">
@@ -307,15 +312,12 @@
             document.getElementById('modeWater').className = mode === 'WATER' ? 'mode-btn active-water' : 'mode-btn';
             document.getElementById('modeAir').className = mode === 'AIR' ? 'mode-btn active-air' : 'mode-btn';
             
-            // Toggle Checklists
             document.getElementById('waterChecklist').style.display = mode === 'WATER' ? 'grid' : 'none';
             document.getElementById('airChecklist').style.display = mode === 'AIR' ? 'grid' : 'none';
 
-            // Toggle FLIR Cheat Sheets
             document.getElementById('waterAlarmBox').style.display = mode === 'WATER' ? 'block' : 'none';
             document.getElementById('airAlarmBox').style.display = mode === 'AIR' ? 'block' : 'none';
 
-            // Toggle Button Color
             const btn = document.getElementById('commitBtn');
             btn.style.background = mode === 'WATER' ? '#0cf' : '#f39c12';
             btn.innerHTML = mode === 'WATER' ? '✅ COMMIT WATER SNAPSHOT' : '✅ COMMIT AIR SNAPSHOT';
@@ -383,12 +385,10 @@
             const tBase = parseFloat(document.getElementById('tBase').value);
             const tSurf = parseFloat(document.getElementById('surfTemp').value);
 
-            // 1. Calculate Delta-T
             const dt = Math.abs(tIn - tOut);
             document.getElementById('deltaTVal').innerText = dt.toFixed(1) + "°F";
             document.getElementById('deltaTwarn').style.display = dt < 15.0 ? 'block' : 'none';
 
-            // 2. Dew Point Formula (Alduchov and Eskridge)
             const tC = (tIn - 32) * 5 / 9;
             const a = 17.625;
             const b = 243.04;
@@ -398,25 +398,19 @@
             document.getElementById('dewPointVal').innerText = tdpF.toFixed(1) + "°F";
             document.getElementById('uiDewTarget').innerText = tdpF.toFixed(1);
 
-            // 3. SET THE FLIR ALARMS
-            // Water = Baseline minus 3 for evaporative cooling
             const waterAlarm = (tBase - 3.0).toFixed(1);
             document.getElementById('uiWaterAlarmTarget').innerText = `BELOW ${waterAlarm}°F`;
 
-            // Air = Baseline +/- 5 based on Outdoor Temp
             if (tOut < tIn) {
-                // Cold outside = Cold draft inside
                 const airAlarm = (tBase - 5.0).toFixed(1);
                 document.getElementById('uiAirAlarmTarget').innerText = `BELOW ${airAlarm}°F`;
-                document.getElementById('uiAirAlarmTarget').style.color = "#0cf"; // Blue
+                document.getElementById('uiAirAlarmTarget').style.color = "#0cf"; 
             } else {
-                // Hot outside = Hot draft inside
                 const airAlarm = (tBase + 5.0).toFixed(1);
                 document.getElementById('uiAirAlarmTarget').innerText = `ABOVE ${airAlarm}°F`;
-                document.getElementById('uiAirAlarmTarget').style.color = "#f00"; // Red
+                document.getElementById('uiAirAlarmTarget').style.color = "#f00"; 
             }
 
-            // 4. EVALUATE THE ACTUAL ANOMALY (surfTemp vs physics)
             const box = document.getElementById('resultBox');
             
             if (currentMode === 'WATER') {
@@ -433,7 +427,6 @@
                     box.style.background = "#222"; box.style.color = "#fff";
                 }
             } else {
-                // Air evaluation: compares Anomaly Surface Temp against the Dry Wall Baseline
                 const dev = Math.abs(tBase - tSurf);
                 if (dev >= 5.0) {
                     box.innerText = "ANOMALY (" + dev.toFixed(1) + "°)";
@@ -531,74 +524,4 @@
         }
 
         function nextImage() {
-            document.getElementById('imgNum').value = parseInt(document.getElementById('imgNum').value) + 1;
-            
-            // Auto sync surface temp back to the known DRY BASELINE for faster resetting
-            const tBase = document.getElementById('tBase').value;
-            document.getElementById('surfTemp').value = tBase;
-            document.getElementById('surfTempVal').innerText = parseFloat(tBase).toFixed(1);
-            
-            toggleSound(currentMode);
-            updatePhysics();
-            goToSlide(0);
-        }
-
-        function saveDraft() { 
-            const draft = { project: document.getElementById('projectID').value, tech: document.getElementById('techName').value };
-            localStorage.setItem('strataInteriorDraft', JSON.stringify(draft)); 
-        }
-        
-        function clearVault() { if(confirm("Wipe Vault?")) { localStorage.removeItem('strataVaultInteriorV2'); location.reload(); } }
-        
-        function saveApiKey() { 
-            localStorage.setItem('strataApiKey', document.getElementById('apiKeyInput').value); 
-            alert("API Key Saved Securely to Device!"); 
-        }
-        
-        async function syncWeather() {
-            const key = localStorage.getItem('strataApiKey');
-            if(!key) {
-                alert("Please save your OpenWeather API Key in the Command Center first.");
-                goToSlide(3);
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&units=imperial&appid=${key}`);
-                    const data = await res.json();
-                    document.getElementById('tOut').value = data.main.temp.toFixed(1);
-                    updatePhysics();
-                } catch(e) { alert("Weather Error. Please check connection or enter manually."); }
-            });
-        }
-        
-        function exportLogs() {
-            let csv = "Project,Technician,Time,Image,ID,Mode,Findings,Moisture %,Surface Temp,Physics Ref\n";
-            const proj = document.getElementById('projectID').value || "Unknown Project";
-            const tech = document.getElementById('techName').value || "Unknown Tech";
-            
-            document.querySelectorAll("#logTable tbody tr").forEach(tr => { 
-                let rowData = `"${proj}","${tech}",`;
-                rowData += Array.from(tr.querySelectorAll("td")).map(td => `"${td.innerText}"`).join(","); 
-                csv += rowData + "\n"; 
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = "Strata_Scan_Report.csv"; a.click();
-        }
-
-        function goToSlide(num) {
-            document.getElementById('mainSlider').style.transform = `translateX(-${num * 100}vw)`;
-            const items = document.querySelectorAll('.nav-item');
-            items.forEach((item, i) => item.classList.toggle('active', i === num));
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Offline Engine Active'))
-                    .catch(err => console.error('Offline Engine Failed:', err));
-            });
-        }
-    </script>
-</body>
-</html>
+            document.getElementById('img
