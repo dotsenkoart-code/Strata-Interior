@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Strata-Scan: Interior v2.2 (Speed Workflow)</title>
+    <title>Strata-Scan: Interior v2.2 (Pro Physics)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="manifest.json">
@@ -27,6 +27,7 @@
         
         .alarm-box { background: #222; padding: 25px; text-align: center; border-radius: 15px; font-size: 2.5rem; font-weight: 900; border: 5px solid #444; margin: 10px 0; transition: 0.3s; }
         .crit { background: #f00 !important; color: #fff; border-color: #fff !important; animation: blink 0.6s infinite; }
+        .warn { background: #f39c12 !important; color: #000 !important; border-color: #000 !important; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         .btn { padding: 20px; border-radius: 12px; border: none; width: 100%; font-size: 1.3rem; font-weight: 800; cursor: pointer; }
@@ -335,43 +336,58 @@
             document.getElementById('fullIDDisplay').innerHTML = `Unit ${unit} (Fl ${floor}) <br> ${room} <br> ${element} ${elNum} (${zone})`;
         }
 
+        // --- BULLETPROOF PHYSICS ENGINE ---
         function updatePhysics() {
             const tIn = parseFloat(document.getElementById('tIn').value);
             const rhIn = parseFloat(document.getElementById('rhIn').value);
             const tOut = parseFloat(document.getElementById('tOut').value);
             const tSurf = parseFloat(document.getElementById('surfTemp').value);
 
-            const dt = Math.abs(tIn - tOut).toFixed(1);
-            document.getElementById('deltaTVal').innerText = dt + "°F";
+            // 1. AIR PHYSICS: Calculate Delta-T (ASTM C1060 Standard)
+            const dt = Math.abs(tIn - tOut);
+            document.getElementById('deltaTVal').innerText = dt.toFixed(1) + "°F";
+            // Warn if Delta-T is below the 15F industry threshold
             document.getElementById('deltaTwarn').style.display = dt < 15.0 ? 'block' : 'none';
 
-            const a = 17.27, b = 237.7;
-            const gamma = (a * ((tIn-32)*5/9)) / (b + ((tIn-32)*5/9)) + Math.log(rhIn/100);
-            const tdp = ((b * gamma) / (a - gamma) * 9/5) + 32;
-            document.getElementById('dewPointVal').innerText = tdp.toFixed(1) + "°F";
+            // 2. WATER PHYSICS: Alduchov and Eskridge Dew Point Formula (High Precision)
+            // Convert to Celsius for the physics engine
+            const tC = (tIn - 32) * 5 / 9;
+            const a = 17.625;
+            const b = 243.04;
+            
+            // Calculate alpha and Dew Point in Celsius
+            const alpha = Math.log(rhIn / 100) + ((a * tC) / (b + tC));
+            const tdpC = (b * alpha) / (a - alpha);
+            
+            // Convert back to Fahrenheit
+            const tdpF = (tdpC * 9 / 5) + 32;
+            document.getElementById('dewPointVal').innerText = tdpF.toFixed(1) + "°F";
 
             const box = document.getElementById('resultBox');
             
             if (currentMode === 'WATER') {
-                const risk = tSurf - tdp;
-                if (tSurf <= tdp) {
+                // WATER EVALUATION LOGIC
+                const risk = tSurf - tdpF;
+                if (tSurf <= tdpF) {
                     box.innerText = "CONDENSATION";
                     box.className = "alarm-box crit";
-                } else if (risk < 5.0) {
+                } else if (risk <= 5.0) {
+                    // 5-Degree Microclimate Tolerance Buffer
                     box.innerText = "RISK (" + risk.toFixed(1) + "°)";
                     box.className = "alarm-box warn";
-                    box.style.background = "#f39c12"; box.style.color = "#000";
                 } else {
                     box.innerText = "DRY";
                     box.className = "alarm-box";
                     box.style.background = "#222"; box.style.color = "#fff";
                 }
             } else {
+                // AIR EVALUATION LOGIC
+                // Evaluate deviation from ambient indoor temp
                 const dev = Math.abs(tIn - tSurf);
                 if (dev > 5.0) {
+                    // If surface is more than 5 degrees off ambient, flag as thermal anomaly
                     box.innerText = "ANOMALY (" + dev.toFixed(1) + "°)";
                     box.className = "alarm-box warn";
-                    box.style.background = "#f39c12"; box.style.color = "#000";
                 } else {
                     box.innerText = "NORMAL";
                     box.className = "alarm-box";
